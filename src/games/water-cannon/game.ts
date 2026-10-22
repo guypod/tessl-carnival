@@ -80,6 +80,23 @@ export function fire(state: WaterCannonState, aimX: number, aimY: number): boole
   return true;
 }
 
+type KeyPress = Pick<
+  KeyboardEvent,
+  'code' | 'repeat' | 'shiftKey' | 'ctrlKey' | 'altKey' | 'metaKey'
+>;
+
+/** Plain Space belongs to the game. Shift+Space and other shortcuts don't. */
+export function isSpace(event: KeyPress): boolean {
+  return (
+    event.code === 'Space' && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+  );
+}
+
+/** Space fires, once per press: holding it down doesn't empty the tank. */
+export function isFireKey(event: KeyPress): boolean {
+  return isSpace(event) && !event.repeat;
+}
+
 /** Advances the game by `dt` seconds. */
 export function step(state: WaterCannonState, dt: number): void {
   for (const target of state.targets) {
@@ -195,7 +212,7 @@ function draw(
     ctx.fillText(`Tank empty! You scored ${state.score}`, WIDTH / 2, HEIGHT / 2);
     ctx.fillStyle = colors.text;
     ctx.font = canvasFont('body');
-    ctx.fillText('Click to play again', WIDTH / 2, HEIGHT / 2 + 40);
+    ctx.fillText('Click or press Space to play again', WIDTH / 2, HEIGHT / 2 + 40);
   }
 }
 
@@ -222,8 +239,7 @@ export const waterCannon: CarnivalGame = {
       };
     };
     const onMove = (event: PointerEvent) => Object.assign(aim, toCanvas(event));
-    const onDown = (event: PointerEvent) => {
-      Object.assign(aim, toCanvas(event));
+    const shoot = () => {
       if (state.phase === 'over') {
         state = createState();
         scoreRecorded = false;
@@ -231,8 +247,21 @@ export const waterCannon: CarnivalGame = {
         fire(state, aim.x, aim.y);
       }
     };
+    const onDown = (event: PointerEvent) => {
+      Object.assign(aim, toCanvas(event));
+      shoot();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!isSpace(event)) return;
+      // Leave Space alone on a focused link or button, such as "Back to the midway".
+      if (event.target !== document.body && event.target !== canvas) return;
+      // Stop the page from scrolling.
+      event.preventDefault();
+      if (isFireKey(event)) shoot();
+    };
     canvas.addEventListener('pointermove', onMove);
     canvas.addEventListener('pointerdown', onDown);
+    window.addEventListener('keydown', onKeyDown);
 
     let frame = 0;
     let last = performance.now();
@@ -254,6 +283,7 @@ export const waterCannon: CarnivalGame = {
       cancelAnimationFrame(frame);
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('keydown', onKeyDown);
     };
   },
 };
