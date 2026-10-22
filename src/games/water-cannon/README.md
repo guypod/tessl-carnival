@@ -5,7 +5,8 @@ Soak the targets on the three rails before your tank runs dry.
 ## How to play
 
 - Move the mouse to aim the cannon, and click or press Space to fire a shot of water.
-  Space fires once per press; holding it down doesn't keep firing.
+  Space fires once per press; holding it down doesn't keep firing. Shift+Space,
+  and Space on a focused link such as "Back to the midway", are left to the page.
 - You have 15 shots. The game ends when the tank is empty and the last shot has landed.
 - Click or press Space on the game over screen to play another round.
 

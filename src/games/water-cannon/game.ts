@@ -80,9 +80,21 @@ export function fire(state: WaterCannonState, aimX: number, aimY: number): boole
   return true;
 }
 
+type KeyPress = Pick<
+  KeyboardEvent,
+  'code' | 'repeat' | 'shiftKey' | 'ctrlKey' | 'altKey' | 'metaKey'
+>;
+
+/** Plain Space belongs to the game. Shift+Space and other shortcuts don't. */
+export function isSpace(event: KeyPress): boolean {
+  return (
+    event.code === 'Space' && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+  );
+}
+
 /** Space fires, once per press: holding it down doesn't empty the tank. */
-export function isFireKey(event: Pick<KeyboardEvent, 'code' | 'repeat'>): boolean {
-  return event.code === 'Space' && !event.repeat;
+export function isFireKey(event: KeyPress): boolean {
+  return isSpace(event) && !event.repeat;
 }
 
 /** Advances the game by `dt` seconds. */
@@ -240,7 +252,9 @@ export const waterCannon: CarnivalGame = {
       shoot();
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.code !== 'Space') return;
+      if (!isSpace(event)) return;
+      // Leave Space alone on a focused link or button, such as "Back to the midway".
+      if (event.target !== document.body && event.target !== canvas) return;
       // Stop the page from scrolling.
       event.preventDefault();
       if (isFireKey(event)) shoot();

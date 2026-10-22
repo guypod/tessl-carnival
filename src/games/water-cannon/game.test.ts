@@ -79,9 +79,12 @@ describe('water cannon', () => {
     expect(Math.max(fast, slow)).toBeGreaterThanOrEqual(slow);
   });
 
-  it('fires on a Space press, but not on a held-down repeat or another key', () => {
-    expect(isFireKey({ code: 'Space', repeat: false })).toBe(true);
-    expect(isFireKey({ code: 'Space', repeat: true })).toBe(false);
-    expect(isFireKey({ code: 'Enter', repeat: false })).toBe(false);
+  it('fires on a plain Space press, but not on a repeat, a modifier or another key', () => {
+    const key = { repeat: false, shiftKey: false, ctrlKey: false, altKey: false, metaKey: false };
+    expect(isFireKey({ ...key, code: 'Space' })).toBe(true);
+    expect(isFireKey({ ...key, code: 'Space', repeat: true })).toBe(false);
+    expect(isFireKey({ ...key, code: 'Enter' })).toBe(false);
+    expect(isFireKey({ ...key, code: 'Space', shiftKey: true })).toBe(false);
+    expect(isFireKey({ ...key, code: 'Space', ctrlKey: true })).toBe(false);
   });
 });
