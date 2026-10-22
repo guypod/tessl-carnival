@@ -312,8 +312,12 @@ export const hookADuck: CarnivalGame = {
       last = time;
       step(state, dt);
       if (state.phase === 'over' && !scoreRecorded) {
-        recordScore(hookADuck.id, state.score);
         scoreRecorded = true;
+        try {
+          recordScore(hookADuck.id, state.score);
+        } catch {
+          // Storage can be full or blocked: keep the game running without saving.
+        }
       }
       draw(ctx, state, aim);
       frame = requestAnimationFrame(loop);

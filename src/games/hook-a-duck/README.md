@@ -16,8 +16,10 @@ Rubber ducks float round a stream in a loop. Lower the hook onto one as it passe
 
 ## Scoring
 
-Each duck has a number on its base, and catching it scores that number. There are 12
-ducks: six score 10, three score 20, one 30, one 50 and one 100. A miss scores nothing.
+Each duck has a number on its base, and catching it scores that number. The number is
+hidden while the duck floats, as at a real booth: it pops up on screen when you catch
+the duck. There are 12 ducks: six score 10, three score 20, one 30, one 50 and one 100.
+A miss scores nothing.
 
 Your final score is saved to the carnival's score board when the round ends.
 
