@@ -4,6 +4,7 @@ import {
   TANK_SIZE,
   createState,
   fire,
+  isFireKey,
   isHit,
   scoreForHit,
   step,
@@ -76,5 +77,11 @@ describe('water cannon', () => {
     const slow = scoreForHit({ ...target, speed: 60 });
     const fast = scoreForHit({ ...target, speed: -180 });
     expect(Math.max(fast, slow)).toBeGreaterThanOrEqual(slow);
+  });
+
+  it('fires on a Space press, but not on a held-down repeat or another key', () => {
+    expect(isFireKey({ code: 'Space', repeat: false })).toBe(true);
+    expect(isFireKey({ code: 'Space', repeat: true })).toBe(false);
+    expect(isFireKey({ code: 'Enter', repeat: false })).toBe(false);
   });
 });
